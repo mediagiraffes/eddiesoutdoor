@@ -597,7 +597,7 @@ document.getElementById('cForm').addEventListener('submit',function(e){
 
     /* Open the Google Form pre-filled in the hidden iframe, which triggers a submission page */
     const base='https://docs.google.com/forms/d/e/1FAIpQLSfpElVYzOHLbFpxnjOzhk5rjr9QK0vmd6sjj8VIyhcGehzwMA/viewform';
-    const prefill=base+'?usp=pp_url&entry.2005620554='+encodeURIComponent(n)+'&entry.1045781291='+encodeURIComponent(em)+'&entry.839337160='+encodeURIComponent(msg);
+    const prefill=base+'?usp=pp_url&entry.574919256='+encodeURIComponent(n)+'&entry.611868102='+encodeURIComponent(em)+'&entry.53913960='+encodeURIComponent(msg);
 
     /* Also try formResponse approach */
     const gf=document.createElement('form');
@@ -605,7 +605,7 @@ document.getElementById('cForm').addEventListener('submit',function(e){
     gf.action='https://docs.google.com/forms/d/e/1FAIpQLSfpElVYzOHLbFpxnjOzhk5rjr9QK0vmd6sjj8VIyhcGehzwMA/formResponse';
     gf.style.display='none';
 
-    [['entry.2005620554',n],['entry.1045781291',em],['entry.839337160',msg]].forEach(([k,v])=>{
+    [['entry.574919256',n],['entry.611868102',em],['entry.53913960',msg]].forEach(([k,v])=>{
         const inp=document.createElement('input');
         inp.type='hidden';inp.name=k;inp.value=v;gf.appendChild(inp);
     });
