@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eddie's Outdoor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#0c0c14;
+            --bg-light:#f5f3ef;
+            --text-dark:#1a1816;
+            --muted:#8a8580;
+            --accent:#2563eb;
+            --accent2:#1d4ed8;
+            --glow:rgba(37,99,232,0.25);
+        }
+        html{scroll-behavior:smooth}
+        body{
+            font-family:'Instrument Sans',system-ui,sans-serif;
+            background:var(--bg-light);
+            color:var(--text-dark);
+            overflow-x:hidden;
+            -webkit-font-smoothing:antialiased;
+        }
+
+        /* =========================================
+           SPLASH - smooth, larger logo
+           ========================================= */
+        .splash{
+            position:fixed;inset:0;background:var(--bg);
+            display:flex;align-items:center;justify-content:center;
+            z-index:90000;flex-direction:column;
+        }
+        .splash-logo{
+            width:240px;height:240px;object-fit:contain;
+            opacity:0;
+            animation:sLogo 4.2s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        .splash-bar{
+            width:0;height:2px;margin-top:24px;
+            background:linear-gradient(90deg,var(--accent),#60a5fa);
+            border-radius:2px;
+            animation:sBar 4.2s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        @keyframes sLogo{
+            0%{opacity:0;transform:scale(.6) translateY(20px)}
+            12%{opacity:1;transform:scale(1.03) translateY(-4px)}
+            22%{transform:scale(.99) translateY(1px)}
+            32%{transform:scale(1) translateY(0)}
+            75%{opacity:1;transform:scale(1) translateY(0)}
+            90%{opacity:.6;transform:scale(1.04) translateY(0)}
+            100%{opacity:0;transform:scale(1.08) translateY(-10px)}
+        }
+        @keyframes sBar{
+            0%{width:0;opacity:0}
+            15%{width:140px;opacity:1}
+            75%{width:140px;opacity:1}
+            100%{width:0;opacity:0}
+        }
+        .splash.bye{
+            opacity:0;
+            transition:opacity .9s cubic-bezier(.4,0,.2,1);
+            pointer-events:none;visibility:hidden;
+        }
+
+        /* =========================================
+           FLOATING BUBBLES
+           ========================================= */
+        .bubbles{
+            position:fixed;inset:0;pointer-events:none;z-index:1;
+            overflow:hidden;
+        }
+        .bubble{
+            position:absolute;border-radius:50%;
+            background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.18),rgba(37,99,232,0.05));
+            border:1px solid rgba(255,255,255,0.06);
+            animation:bubbleRise linear infinite;
+            opacity:0;
+        }
+        @keyframes bubbleRise{
+            0%{opacity:0;transform:translateY(100vh) scale(0.3)}
+            8%{opacity:0.8}
+            90%{opacity:0.6}
+            100%{opacity:0;transform:translateY(-10vh) scale(1)}
+        }
+
+        /* =========================================
+           HERO - image at top, not stretched
+           ========================================= */
+        .hero{
+            position:relative;
+            min-height:100vh;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;
+            background:var(--bg);
+        }
+
+        /* Image at natural resolution, centered, masked on all edges */
+        .hero-bg{
+            position:absolute;
+            top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            z-index:0;
+            pointer-events:none;
+            /* Keep near native res - 585x438, allow slight upscale max */
+            width:min(100%, 900px);
+        }
+        .hero-bg img{
+            width:100%;
+            height:auto;
+            display:block;
+            opacity:0.7;
+            /* CSS mask fades all edges */
+            -webkit-mask-image:radial-gradient(ellipse 70% 65% at center, black 30%, transparent 72%);
+            mask-image:radial-gradient(ellipse 70% 65% at center, black 30%, transparent 72%);
+        }
+
+        /* Subtle atmosphere overlay */
+        .hero-vig{
+            position:absolute;inset:0;
+            background:radial-gradient(ellipse at center,transparent 20%,rgba(12,12,20,0.4) 100%);
+            pointer-events:none;z-index:1;
+        }
+
+<<<<<<< HEAD
+        .logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            width: 100%
+=======
+        .hero-content{
+            position:relative;z-index:5;
+            text-align:center;
+            padding:0 2rem;
+            max-width:800px;
+>>>>>>> 2f60a06 (Major site redesign)
+        }
+
+        /* Ed.png centered above title */
+        .hero-mascot{
+            display:block;
+            width:clamp(150px,24vw,240px);
+            height:auto;
+            object-fit:contain;
+            margin:0 auto 2rem;
+            opacity:0;
+            animation:mascotIn 1.2s cubic-bezier(.22,1,.36,1) 4.4s forwards;
+            filter:drop-shadow(0 10px 50px rgba(0,0,0,0.6));
+        }
+        @keyframes mascotIn{
+            0%{opacity:0;transform:translateY(40px) scale(0.85)}
+            100%{opacity:1;transform:translateY(0) scale(1)}
+        }
+
+        .hero-content h1{
+            font-family:'Bebas Neue',cursive;
+            font-size:clamp(3.2rem,9vw,7.5rem);
+            line-height:.9;letter-spacing:4px;
+            color:#fff;margin-bottom:1.2rem;
+            text-shadow:0 4px 60px rgba(0,0,0,0.6);
+        }
+        .hero-content h1 .accent{
+            color:var(--accent);
+            -webkit-text-stroke:0;
+            paint-order:stroke fill;
+            text-shadow:
+                -2px -2px 0 #fff,
+                2px -2px 0 #fff,
+                -2px 2px 0 #fff,
+                2px 2px 0 #fff,
+                0 -2px 0 #fff,
+                0 2px 0 #fff,
+                -2px 0 0 #fff,
+                2px 0 0 #fff;
+        }
+        .hero-content h1 .char{
+            display:inline-block;
+            opacity:0;transform:translateY(60px) rotateX(-50deg);
+            animation:charUp .7s cubic-bezier(.22,1,.36,1) forwards;
+            transform-origin:bottom;
+        }
+        @keyframes charUp{to{opacity:1;transform:translateY(0) rotateX(0)}}
+
+        .hero-content>p{
+            font-size:clamp(1rem,2.2vw,1.15rem);
+            color:#fff;line-height:1.85;
+            font-weight:500;max-width:540px;margin:0 auto 2.5rem;
+            opacity:0;transform:translateY(20px);
+            animation:fadeIn 1s ease 5.2s forwards;
+            text-shadow:0 1px 3px rgba(0,0,0,0.9),0 4px 12px rgba(0,0,0,0.6);
+        }
+        @keyframes fadeIn{to{opacity:1;transform:translateY(0)}}
+
+        .hero-cta{
+            display:inline-flex;align-items:center;gap:12px;
+            padding:1rem 2.8rem;
+            background:var(--accent);color:#fff;
+            text-decoration:none;border-radius:60px;
+            font-weight:600;font-size:.95rem;letter-spacing:.5px;
+            position:relative;overflow:hidden;
+            opacity:0;transform:translateY(20px);
+            animation:fadeIn 1s ease 5.4s forwards;
+            transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s;
+        }
+        .hero-cta:hover{
+            transform:translateY(-4px) scale(1.04);
+            box-shadow:0 20px 50px var(--glow);
+        }
+        .hero-cta .shine{
+            position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+            transition:left .6s;
+        }
+        .hero-cta:hover .shine{left:100%}
+        .hero-cta svg{transition:transform .3s}
+        .hero-cta:hover svg{transform:translateX(4px)}
+
+        /* =========================================
+           TRANSITION
+           ========================================= */
+        .transition-zone{
+            height:120px;
+            background:linear-gradient(to bottom,var(--bg),var(--bg-light));
+            position:relative;z-index:2;
+        }
+
+        /* =========================================
+           INFINITE GLIDE GALLERY
+           ========================================= */
+        .gallery-section{
+            padding:5rem 0 6rem;
+            position:relative;z-index:2;overflow:hidden;
+        }
+        .sec-title{text-align:center;margin-bottom:3rem;padding:0 2rem}
+        .sec-title h2{
+            font-family:'Bebas Neue',cursive;
+            font-size:clamp(2.2rem,5vw,3.5rem);
+            letter-spacing:4px;color:var(--text-dark);
+        }
+        .sec-title h2 em{font-style:normal;color:var(--accent)}
+        .sec-title p{color:var(--muted);font-weight:400;margin-top:.5rem;font-size:.95rem}
+
+        .glide-track{
+            display:flex;gap:20px;
+            cursor:grab;user-select:none;-webkit-user-select:none;
+            will-change:transform;padding:10px 0;
+        }
+        .glide-track:active{cursor:grabbing}
+
+        .glide-item{
+            flex-shrink:0;
+            width:clamp(300px,45vw,550px);
+            border-radius:16px;overflow:hidden;
+            position:relative;
+            box-shadow:0 15px 50px rgba(0,0,0,0.08);
+            transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;
+        }
+        .glide-item:hover{
+            transform:translateY(-8px) scale(1.02);
+            box-shadow:0 25px 70px rgba(0,0,0,0.12);
+        }
+        .glide-item img{
+            width:100%;height:clamp(200px,30vw,380px);
+            object-fit:cover;display:block;
+            transition:transform .6s ease;
+        }
+        .glide-item:hover img{transform:scale(1.06)}
+
+        .glide-overlay{
+            position:absolute;inset:0;
+            background:linear-gradient(to top,rgba(0,0,0,0.6),transparent 60%);
+            opacity:0;transition:opacity .4s;
+            display:flex;align-items:flex-end;padding:1.5rem;
+        }
+        .glide-item:hover .glide-overlay{opacity:1}
+        .glide-overlay span{color:#fff;font-weight:600;font-size:.9rem;letter-spacing:.5px}
+
+        .gallery-section::before,.gallery-section::after{
+            content:'';position:absolute;top:0;bottom:0;
+            width:80px;z-index:10;pointer-events:none;
+        }
+        .gallery-section::before{left:0;background:linear-gradient(to right,var(--bg-light),transparent)}
+        .gallery-section::after{right:0;background:linear-gradient(to left,var(--bg-light),transparent)}
+
+        /* =========================================
+           CONTACT - Custom beautiful form
+           ========================================= */
+        .contact-section{
+            padding:6rem 2rem 8rem;
+            position:relative;z-index:2;
+        }
+        .contact-inner{max-width:580px;margin:0 auto}
+
+        .form-card{
+            background:#ffffff;
+            border-radius:28px;
+            padding:clamp(2rem,5vw,3.5rem);
+            box-shadow:
+                0 1px 3px rgba(0,0,0,0.04),
+                0 8px 24px rgba(0,0,0,0.06),
+                0 30px 80px rgba(0,0,0,0.04);
+            position:relative;overflow:hidden;
+        }
+        .form-card::before{
+            content:'';position:absolute;
+            top:0;left:0;right:0;height:4px;
+            background:linear-gradient(90deg,var(--accent),#60a5fa,var(--accent));
+            background-size:200% 100%;
+            animation:gradShift 4s ease infinite;
+        }
+        @keyframes gradShift{
+            0%{background-position:0% 50%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 50%}
+        }
+
+        .form-card h3{
+            font-family:'Bebas Neue',cursive;
+            font-size:1.6rem;letter-spacing:3px;
+            margin-bottom:.4rem;text-align:center;
+        }
+        .form-card>p{
+            color:var(--muted);text-align:center;
+            margin-bottom:2rem;font-size:.9rem;
+        }
+
+        .f-group{margin-bottom:1.4rem}
+        .f-group label{
+            display:block;font-weight:600;font-size:.72rem;
+            letter-spacing:2.5px;text-transform:uppercase;
+            color:var(--muted);margin-bottom:.45rem;
+        }
+        .f-group input,.f-group textarea{
+            width:100%;padding:.85rem 1rem;
+            background:#f7f6f3;
+            border:2px solid #eae8e4;
+            border-radius:12px;
+            font-family:inherit;font-size:.95rem;
+            color:var(--text-dark);
+            transition:all .3s cubic-bezier(.22,1,.36,1);
+            outline:none;resize:vertical;
+        }
+        .f-group input:focus,.f-group textarea:focus{
+            border-color:var(--accent);
+            background:#fff;
+            box-shadow:0 0 0 4px rgba(37,99,232,0.1);
+        }
+        .f-group input::placeholder,.f-group textarea::placeholder{color:#c5c0b8}
+        .f-group textarea{min-height:100px}
+
+        .f-submit{
+            width:100%;padding:1rem;margin-top:.5rem;
+            background:var(--accent);color:#fff;
+            border:none;border-radius:12px;
+            font-family:inherit;font-weight:600;
+            font-size:.95rem;letter-spacing:.5px;
+            cursor:pointer;position:relative;overflow:hidden;
+            transition:all .35s cubic-bezier(.22,1,.36,1);
+        }
+        .f-submit:hover{
+            background:var(--accent2);
+            transform:translateY(-2px);
+            box-shadow:0 12px 35px var(--glow);
+        }
+        .f-submit .shine{
+            position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+            transition:left .5s;
+        }
+        .f-submit:hover .shine{left:100%}
+
+        /* Success state */
+        .f-ok{
+            display:none;text-align:center;padding:2rem 0;
+        }
+        .f-ok.show{display:block}
+        .f-ok .ico{
+            width:56px;height:56px;border-radius:50%;
+            background:var(--accent);
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 1rem;
+            animation:pop .5s cubic-bezier(.22,1,.36,1);
+        }
+        @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+        .f-ok h4{
+            font-family:'Bebas Neue',cursive;
+            font-size:1.6rem;letter-spacing:3px;margin-bottom:.3rem;
+        }
+        .f-ok p{color:var(--muted);font-size:.9rem}
+        .f-fields.gone{display:none}
+
+        /* Hidden google form iframe */
+        .gf-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+
+        /* =========================================
+           FOOTER
+           ========================================= */
+        footer{
+            padding:2.5rem 2rem;text-align:center;
+            border-top:1px solid rgba(0,0,0,.05);
+            position:relative;z-index:2;
+        }
+        footer p{color:var(--muted);font-size:.8rem;letter-spacing:1px}
+
+        /* =========================================
+           SCROLL REVEAL
+           ========================================= */
+        .sr{
+            opacity:0;transform:translateY(50px);
+            transition:all .9s cubic-bezier(.22,1,.36,1);
+        }
+        .sr.show{opacity:1;transform:translateY(0)}
+        .sr-d1{transition-delay:.15s}
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+        @media(max-width:768px){
+            .hero{min-height:auto;padding-bottom:60px}
+            .hero-content{padding-top:40px}
+            .hero-content h1{letter-spacing:2px}
+            .hero-mascot{width:clamp(120px,35vw,180px);margin-bottom:1.5rem}
+            .hero-bg img{min-height:40vh}
+            .transition-zone{height:80px}
+            .gallery-section{padding:3rem 0 4rem}
+            .glide-item{width:280px}
+            .glide-item img{height:200px}
+            .contact-section{padding:4rem 1.2rem 5rem}
+            .form-card{padding:2rem 1.5rem;border-radius:20px}
+            .gallery-section::before,.gallery-section::after{width:40px}
+            .splash-logo{width:200px;height:200px}
+        }
+        @media(max-width:480px){
+            .hero-content h1{font-size:2.8rem}
+            .hero-mascot{width:130px}
+            .glide-item{width:250px}
+            .glide-item img{height:170px}
+            .sec-title h2{font-size:2rem}
+            .form-card{padding:1.8rem 1.3rem}
+        }
+    </style>
+</head>
+<body>
+
+<!-- Splash -->
+<div class="splash" id="splash">
+    <img src="assets/logo.png" alt="Eddie's Outdoor" class="splash-logo">
+    <div class="splash-bar"></div>
+</div>
+
+<!-- Bubbles -->
+<div class="bubbles" id="bubbles"></div>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-bg"><img src="assets/IMG_0420.JPG" alt=""></div>
+    <div class="hero-vig"></div>
+    <div class="hero-content">
+        <img src="assets/ed.png" alt="Eddie's Outdoor" class="hero-mascot">
+        <h1 id="heroTitle">PREMIUM<br>OUTDOOR<br><span class="accent">ADVERTISING</span></h1>
+        <p>Supplying companies of all sizes with the most premiere media placements in the world. All options are wholesale priced and available both long and short term.</p>
+        <a href="#contact" class="hero-cta">
+            <span class="shine"></span>
+            Get Started
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+    </div>
+</section>
+
+<<<<<<< HEAD
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">EDDIE'S<br>OUTDOOR</div>
+
+=======
+<div class="transition-zone"></div>
+
+<!-- Gallery -->
+<section class="gallery-section" id="work">
+    <div class="sec-title sr">
+        <h2>OUR <em>WORK</em></h2>
+        <p>Real placements. Real results. Real impact.</p>
+    </div>
+    <div class="glide-track" id="glideTrack">
+        <div class="glide-item"><img src="assets/1000.jpg" alt="Premium Urban Placements"><div class="glide-overlay"><span>Premium Urban Placements</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0405.jpg" alt="Digital & Static Billboards"><div class="glide-overlay"><span>Digital & Static Billboards</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0406.JPG" alt="Eye-Catching Designs"><div class="glide-overlay"><span>Eye-Catching Designs</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0407.JPG" alt="Street Level Impact"><div class="glide-overlay"><span>Street Level Impact</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0408.JPG" alt="Large Format Displays"><div class="glide-overlay"><span>Large Format Displays</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0409.JPG" alt="Multi-Location Campaigns"><div class="glide-overlay"><span>Multi-Location Campaigns</span></div></div>
+        <!-- Duplicates for seamless loop -->
+        <div class="glide-item"><img src="assets/1000.jpg" alt="Premium Urban Placements"><div class="glide-overlay"><span>Premium Urban Placements</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0405.jpg" alt="Digital & Static Billboards"><div class="glide-overlay"><span>Digital & Static Billboards</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0406.JPG" alt="Eye-Catching Designs"><div class="glide-overlay"><span>Eye-Catching Designs</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0407.JPG" alt="Street Level Impact"><div class="glide-overlay"><span>Street Level Impact</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0408.JPG" alt="Large Format Displays"><div class="glide-overlay"><span>Large Format Displays</span></div></div>
+        <div class="glide-item"><img src="assets/IMG_0409.JPG" alt="Multi-Location Campaigns"><div class="glide-overlay"><span>Multi-Location Campaigns</span></div></div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section" id="contact">
+    <div class="contact-inner">
+        <div class="sec-title sr">
+            <h2>LET'S <em>TALK</em></h2>
+            <p>Tell us what you're thinking. We'll take it from there.</p>
+        </div>
+        <div class="form-card sr sr-d1">
+            <div class="f-fields" id="fFields">
+                <form id="cForm" autocomplete="off">
+                    <div class="f-group">
+                        <label for="fn">Name</label>
+                        <input type="text" id="fn" name="fn" placeholder="Your name" required>
+                    </div>
+                    <div class="f-group">
+                        <label for="fe">Email</label>
+                        <input type="email" id="fe" name="fe" placeholder="your@email.com" required>
+                    </div>
+                    <div class="f-group">
+                        <label for="fm">Tell us about your campaign</label>
+                        <textarea id="fm" name="fm" placeholder="What are you looking to do?"></textarea>
+                    </div>
+                    <button type="submit" class="f-submit">
+                        <span class="shine"></span>
+                        Send Message
+                    </button>
+                </form>
+            </div>
+            <div class="f-ok" id="fOk">
+                <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <h4>MESSAGE SENT</h4>
+                <p>We'll be in touch soon.</p>
+            </div>
+>>>>>>> 2f60a06 (Major site redesign)
+        </div>
+    </div>
+</section>
+
+<<<<<<< HEAD
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Premium Outdoor <span class="accent">Advertising</span></h1>
+                <p>Strategic billboard placement, wholesale pricing, and measurable results. We supply companies of all sizes with the most premiere media placements in the world.</p>
+                <a href="#contact" class="cta-button">Get Started</a>
+            </div>
+            <div class="hero-image">
+                <img src="assets/ed.png" alt="Eddie's Outdoor">
+            </div>
+        </div>
+    </section>
+
+  
+=======
+<!-- Hidden iframe for Google Form submission -->
+<iframe name="gfTarget" class="gf-hidden" tabindex="-1"></iframe>
+
+<footer>
+    <p>&copy; 2025 EDDIE'S OUTDOOR ADVERTISING</p>
+</footer>
+>>>>>>> 2f60a06 (Major site redesign)
+
+<script>
+/* SPLASH */
+setTimeout(()=>document.getElementById('splash').classList.add('bye'),4200);
+
+/* BUBBLES */
+const bc=document.getElementById('bubbles');
+for(let i=0;i<35;i++){
+    const b=document.createElement('div');
+    b.className='bubble';
+    const s=15+Math.random()*55;
+    b.style.width=s+'px';b.style.height=s+'px';
+    b.style.left=Math.random()*100+'%';
+    b.style.animationDuration=(10+Math.random()*18)+'s';
+    b.style.animationDelay=(Math.random()*14)+'s';
+    bc.appendChild(b);
+}
+
+/* CHAR ANIMATION */
+const title=document.getElementById('heroTitle');
+let ci=0;
+title.innerHTML=title.innerHTML.replace(/([^<>\s])(?![^<]*>)/g,m=>{
+    ci++;return`<span class="char" style="animation-delay:${4.3+ci*0.03}s">${m}</span>`;
+});
+
+/* SCROLL REVEAL */
+const srO=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');srO.unobserve(e.target)}})
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.sr').forEach(el=>srO.observe(el));
+
+/* INFINITE GLIDE */
+const track=document.getElementById('glideTrack');
+const items=track.querySelectorAll('.glide-item');
+const origCount=6;
+let pos=0,speed=0.8;
+let isDrag=false,dragStartX=0,dragLeft=0,dragV=0,lastDX=0;
+
+function getSetW(){
+    let w=0;
+    for(let i=0;i<origCount;i++)w+=items[i].offsetWidth+20;
+    return w;
+}
+
+function glide(){
+    if(!isDrag){
+        pos-=speed;
+        const sw=getSetW();
+        if(Math.abs(pos)>=sw)pos+=sw;
+        if(pos>0)pos-=sw;
+    }
+    track.style.transform=`translateX(${pos}px)`;
+    requestAnimationFrame(glide);
+}
+
+function dStart(x){isDrag=true;dragStartX=x;dragLeft=pos;lastDX=x;dragV=0;track.style.cursor='grabbing'}
+function dMove(x){if(!isDrag)return;dragV=x-lastDX;lastDX=x;pos=dragLeft+(x-dragStartX)}
+function dEnd(){
+    if(!isDrag)return;isDrag=false;track.style.cursor='grab';
+    let m=dragV*2;
+    (function decay(){if(Math.abs(m)>0.5){pos+=m;m*=0.95;requestAnimationFrame(decay)}})();
+}
+
+track.addEventListener('mousedown',e=>{e.preventDefault();dStart(e.clientX)});
+window.addEventListener('mousemove',e=>dMove(e.clientX));
+window.addEventListener('mouseup',dEnd);
+track.addEventListener('touchstart',e=>dStart(e.touches[0].clientX),{passive:true});
+window.addEventListener('touchmove',e=>dMove(e.touches[0].clientX),{passive:true});
+window.addEventListener('touchend',dEnd);
+glide();
+
+/* FORM - submits to Google Form via hidden iframe */
+document.getElementById('cForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    const n=document.getElementById('fn').value;
+    const em=document.getElementById('fe').value;
+    const msg=document.getElementById('fm').value;
+
+    /* Open the Google Form pre-filled in the hidden iframe, which triggers a submission page */
+    const base='https://docs.google.com/forms/d/e/1FAIpQLSfpElVYzOHLbFpxnjOzhk5rjr9QK0vmd6sjj8VIyhcGehzwMA/viewform';
+    const prefill=base+'?usp=pp_url&entry.2005620554='+encodeURIComponent(n)+'&entry.1045781291='+encodeURIComponent(em)+'&entry.839337160='+encodeURIComponent(msg);
+
+    /* Also try formResponse approach */
+    const gf=document.createElement('form');
+    gf.method='POST';gf.target='gfTarget';
+    gf.action='https://docs.google.com/forms/d/e/1FAIpQLSfpElVYzOHLbFpxnjOzhk5rjr9QK0vmd6sjj8VIyhcGehzwMA/formResponse';
+    gf.style.display='none';
+
+    [['entry.2005620554',n],['entry.1045781291',em],['entry.839337160',msg]].forEach(([k,v])=>{
+        const inp=document.createElement('input');
+        inp.type='hidden';inp.name=k;inp.value=v;gf.appendChild(inp);
+    });
+
+    document.body.appendChild(gf);
+    gf.submit();
+    setTimeout(()=>document.body.removeChild(gf),1000);
+
+    document.getElementById('fFields').classList.add('gone');
+    document.getElementById('fOk').classList.add('show');
+});
+
+/* PARALLAX */
+window.addEventListener('scroll',()=>{
+    const st=window.scrollY;
+    const bg=document.querySelector('.hero-bg');
+    if(bg&&st<window.innerHeight*1.5){
+        bg.style.transform=`translate(-50%,calc(-50% + ${st*0.12}px))`;
+    }
+});
+</script>
+</body>
+</html>
